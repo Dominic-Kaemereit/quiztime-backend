@@ -20,15 +20,14 @@ jobs:
           java-version: '21'
           distribution: 'temurin'
 
-      - name: Grant execute permission for gradlew (falls du Gradle nutzt)
+      - name: Grant execute permission for gradlew
         if: ${{ github.event_name == 'push' }}
         run: chmod +x ./gradlew
 
       - name: Build Spring Boot Application
         if: ${{ github.event_name == 'push' }}
         run: |
-          ./mvnw clean package -DskipTests # Für Maven
-          # ./gradlew build -x test        # Für Gradle
+          ./gradlew build -x test
 
       - name: Login to GitHub Container Registry
         if: ${{ github.event_name == 'push' }}

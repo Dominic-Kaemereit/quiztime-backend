@@ -187,15 +187,6 @@ class DefaultDBData(
             )
         ))
         questions.add(Question(
-            question = "Welches ist das längste Fluss der Welt?",
-            answers = mapOf(
-                "Amazonas" to true,
-                "Nil" to false,
-                "Jangtsekiang" to false,
-                "Mississippi" to false
-            )
-        ))
-        questions.add(Question(
             question = "Welches Metall ist der Hauptbestandteil von Stahl?",
             answers = mapOf(
                 "Eisen" to true,

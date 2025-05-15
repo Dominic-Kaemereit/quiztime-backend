@@ -1,10 +1,10 @@
-# Or another base image with JDK 21
+# Verwende ein anderes Basis-Image mit JDK 21
 FROM openjdk:21-jdk-slim
 
 # Setze das Arbeitsverzeichnis im Container
 WORKDIR /app
 
-# Kopiere die Gradle-Wrapper-Dateien (optional, aber gut für konsistente Builds)
+# Kopiere die Gradle-Wrapper-Dateien
 COPY gradlew .
 COPY gradle ./gradle
 
@@ -12,17 +12,18 @@ COPY gradle ./gradle
 COPY build.gradle.kts .
 COPY settings.gradle.kts .
 
-# Kopiere die Kotlin-Quellcode-Dateien
+# Kopiere den Quellcode
 COPY src ./src
 
-# Führe Gradle aus, um die Anwendung zu bauen (das Ergebnis ist eine ausführbare JAR-Datei)
-RUN chmod +x ./gradlew && ./gradlew bootJar
+# Führe Gradle aus, um die Anwendung zu bauen
+RUN chmod +x ./gradlew
+RUN ./gradlew bootJar
 
-# Kopiere die erstellte JAR-Datei in das Image (angepasster Pfad)
-COPY build/libs/*.jar app.jar
+# Kopiere die erstellte JAR-Datei
+COPY build/libs/*.jar /app/app.jar
 
-# Gib den Port an, auf dem die Anwendung läuft (passe dies bei Bedarf an)
+# Gib den Port an, auf dem die Anwendung läuft
 EXPOSE 8080
 
-# Definiere den Befehl zum Ausführen der Anwendung mit dem dev-Profil (vereinfachter Pfad)
-ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=dev"]
+# Definiere den Befehl zum Ausführen der Anwendung
+ENTRYPOINT ["java", "-jar", "/app/app.jar", "--spring.profiles.active=dev"]

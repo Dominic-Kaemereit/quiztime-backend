@@ -18,11 +18,11 @@ COPY src ./src
 # Führe Gradle aus, um die Anwendung zu bauen (das Ergebnis ist eine ausführbare JAR-Datei)
 RUN chmod +x ./gradlew && ./gradlew bootJar
 
-# Kopiere die erstellte JAR-Datei in das Image
+# Kopiere die erstellte JAR-Datei in das Image (angepasster Pfad)
 COPY build/libs/*.jar app.jar
 
 # Gib den Port an, auf dem die Anwendung läuft (passe dies bei Bedarf an)
 EXPOSE 8080
 
-# Definiere den Befehl zum Ausführen der Anwendung mit dem dev-Profil
-ENTRYPOINT ["java", "-jar", "/app/app.jar", "--spring.profiles.active=dev"]
+# Definiere den Befehl zum Ausführen der Anwendung mit dem dev-Profil (vereinfachter Pfad)
+ENTRYPOINT ["java", "-jar", "app.jar", "--spring.profiles.active=dev"]

@@ -245,8 +245,8 @@ class DefaultDBData(
         questions.add(Question(
             question = "Welches Land hat die größte Bevölkerung?",
             answers = mapOf(
-                "China" to true,
-                "Indien" to false,
+                "China" to false,
+                "Indien" to true,
                 "USA" to false,
                 "Indonesien" to false
             )

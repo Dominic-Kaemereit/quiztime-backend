@@ -55,6 +55,6 @@ jobs:
           push: true
           tags: |
             ghcr.io/dominic-kaemereit:${{ github.sha }}
-            ghcr.io/dominic-kaemereit:latest # latest Tag immer pushen
+            ghcr.io/dominic-kaemereit:latest
           build-args: |
             SPRING_PROFILES_ACTIVE: prod

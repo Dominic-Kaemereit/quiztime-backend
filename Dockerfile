@@ -4,7 +4,7 @@ WORKDIR /home/gradle/src/
 
 COPY --chown=gradle:gradle . .
 
-RUN gradle build -x --args='--spring.profiles.active=dev'
+RUN gradle build -Dspring.profiles.active=dev
 
 FROM eclipse-temurin:21-jre-alpine
 

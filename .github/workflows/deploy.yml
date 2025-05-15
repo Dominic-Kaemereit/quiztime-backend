@@ -55,10 +55,11 @@ jobs:
             SPRING_PROFILES_ACTIVE: prod # Standardmäßig Prod-Profil setzen
 
       - name: Docker Push mit Latest Tag (optional, für Main-Branch)
-        if: github.ref == 'refs/heads/main'
-        uses: docker/build-push-action@v5
+        id: build-and-push
+        uses: docker/build-push-action@v4
         with:
-          push: true
-          tags: ghcr.io/${{ format(github.repository, '{0}') }}:latest
-          build-args: |
-            SPRING_PROFILES_ACTIVE: prod # Standardmäßig Prod-Profil setzen
+          context: .
+          push: ${{ github.event_name != 'pull_request' }}
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          platforms: linux/amd64

@@ -23,7 +23,6 @@ class DailyQuestionsController(
     private val QUESTION_CACHE_EXPIRATION = TimeUnit.HOURS.toMillis(24)
 
     private var dailyQuestionsAge: Long = 0
-    private var dailyQuestions: List<Question> = emptyList()
 
     private val userQuestionCache: MutableMap<String, List<Question>> = mutableMapOf()
 
@@ -65,24 +64,7 @@ class DailyQuestionsController(
             println("No email provided, using default daily questions.")
         }
 
-        if (dailyQuestions.isEmpty() ||
-            System.currentTimeMillis() - dailyQuestionsAge > TimeUnit.HOURS.toMillis(QUESTION_CACHE_EXPIRATION)) {
-            if (dailyQuestions.isNotEmpty()) {
-                println("Daily questions cache expired, fetching new questions.")
-            } else {
-                println("Fetching daily questions for the first time.")
-            }
-
-            dailyQuestions = getDailyQuestionsFromDatabase()
-            dailyQuestionsAge = System.currentTimeMillis()
-
-            println("Daily questions cache updated.")
-            println("The daily questions are:")
-            dailyQuestions.forEach { question ->
-                println("Question: ${question.question}")
-            }
-        }
-        return dailyQuestions
+        return getDailyQuestionsFromDatabase()
     }
 
     private fun getDailyQuestionsFromDatabase(): List<Question> {

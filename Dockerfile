@@ -1,5 +1,5 @@
-# Verwende eine schlanke Java 21 JRE als Basis-Image
-FROM eclipse-temurin:21-jre
+# Or another base image with JDK 21
+FROM openjdk:21-jdk-slim
 
 # Setze das Arbeitsverzeichnis im Container
 WORKDIR /app

@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*
 import java.util.concurrent.TimeUnit
 
 @RestController
-@RequestMapping("/api/question/daily")
+@RequestMapping("/public-api/question/daily")
 @Tag(name = "Daily Questions", description = "You can get the daily questions here.")
 class DailyQuestionsController(
     private val questionRepository: QuestionRepository

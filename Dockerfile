@@ -10,7 +10,7 @@ FROM eclipse-temurin:21-jre-alpine
 
 WORKDIR /app
 
-COPY target/*.jar app.jar
+COPY --from=build /home/gradle/src/build/libs/app.jar /app/app.jar
 
 EXPOSE 8080
 

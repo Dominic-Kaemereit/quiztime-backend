@@ -44,10 +44,11 @@ class DailyQuestionsController(
 
         if (authHeader != null && authHeader.startsWith("Bearer ")) {
             val email = authHeader.substring(7) // remove "Bearer "
-            val questions: Map<String, String> = request.parameterMap
-                .filterKeys { it.startsWith("question") }
-                .mapKeys { it.key.substring(8) } // remove "question"
-                .mapValues { it.value[0] }
+            // GEt all parameters
+            val questions: MutableMap<String, String> = mutableMapOf()
+            request.parameterMap.map { (key, value) ->
+                questions[key] = value[0]
+            }
 
             println("Finishing daily questions for user: $email with answers: $questions")
         }

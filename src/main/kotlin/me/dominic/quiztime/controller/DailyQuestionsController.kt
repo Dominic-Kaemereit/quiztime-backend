@@ -2,8 +2,10 @@ package me.dominic.quiztime.controller
 
 import io.swagger.v3.oas.annotations.tags.Tag
 import jakarta.servlet.http.HttpServletRequest
+import me.dominic.quiztime.entity.DailyQuestion
 import me.dominic.quiztime.entity.Question
 import me.dominic.quiztime.entity.User
+import me.dominic.quiztime.repository.DailyQuestionRepository
 import me.dominic.quiztime.repository.QuestionRepository
 import me.dominic.quiztime.repository.UserRepository
 import org.springframework.web.bind.annotation.GetMapping
@@ -16,13 +18,12 @@ import java.util.concurrent.TimeUnit
 @Tag(name = "Daily Questions", description = "You can get the daily questions here.")
 class DailyQuestionsController(
     private val questionRepository: QuestionRepository,
-    private val userRepository: UserRepository
+    private val userRepository: UserRepository,
+    private val dailyQuestionRepository: DailyQuestionRepository
 ) {
 
     private val QUESTIONS = 5
     private val QUESTION_CACHE_EXPIRATION = TimeUnit.HOURS.toMillis(24)
-
-    private var dailyQuestionsAge: Long = 0
 
     private val userQuestionCache: MutableMap<String, List<Question>> = mutableMapOf()
 
@@ -50,7 +51,44 @@ class DailyQuestionsController(
                 questions[key] = value[0]
             }
 
+            dailyQuestionRepository.save(
+                DailyQuestion(
+                    email = email,
+                    createdAt = System.currentTimeMillis(),
+                    answers = questions
+                )
+            )
+
+            userQuestionCache.remove(email)
+
             println("Finishing daily questions for user: $email with answers: $questions")
+        }
+
+        return "No email provided, daily questions not finished."
+    }
+
+    @GetMapping("/check")
+    fun checkDailyQuestions(request: HttpServletRequest): String {
+        val authHeader = request.getHeader("Authorization")
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            val email = authHeader.substring(7) // remove "Bearer "
+
+            //Get the last daily question for the user
+            val lastDailyQuestion = dailyQuestionRepository.findTopByEmailOrderByCreatedAtDesc(email)
+
+            if (lastDailyQuestion == null) {
+                return "You have not answered the daily questions yet."
+            }
+
+            val currentTime = System.currentTimeMillis()
+            val timeDifference = currentTime - lastDailyQuestion.createdAt
+            val hoursDifference = TimeUnit.MILLISECONDS.toHours(timeDifference)
+            if (hoursDifference < 24) {
+                return "You have already answered the daily questions. Please wait for ${24 - hoursDifference} hours."
+            } else {
+                return "You can answer the daily questions again."
+            }
         }
 
         return "No email provided, daily questions not finished."
@@ -71,7 +109,7 @@ class DailyQuestionsController(
 
             val questions = userQuestionCache[user.email]
 
-            if (questions != null && System.currentTimeMillis() - dailyQuestionsAge < TimeUnit.HOURS.toMillis(QUESTION_CACHE_EXPIRATION)) {
+            if (questions != null) {
                 println("Returning cached questions for user: ${user.email}")
                 return questions
             } else {

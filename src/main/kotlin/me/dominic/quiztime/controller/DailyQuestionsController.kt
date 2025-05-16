@@ -11,6 +11,9 @@ import me.dominic.quiztime.repository.UserRepository
 import org.springframework.web.bind.annotation.GetMapping
 import org.springframework.web.bind.annotation.RequestMapping
 import org.springframework.web.bind.annotation.RestController
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
 @RestController
@@ -81,13 +84,10 @@ class DailyQuestionsController(
                 return "You have not answered the daily questions yet."
             }
 
-            val currentTime = System.currentTimeMillis()
-            val timeDifference = currentTime - lastDailyQuestion.createdAt
-            val hoursDifference = TimeUnit.MILLISECONDS.toHours(timeDifference)
-            if (hoursDifference < 24) {
-                return "You have already answered the daily questions. Please wait for ${24 - hoursDifference} hours."
+            return if (isToday(lastDailyQuestion.createdAt)) {
+                "You have already answered the daily questions."
             } else {
-                return "You can answer the daily questions again."
+                "You can answer the daily questions again."
             }
         }
 
@@ -128,5 +128,14 @@ class DailyQuestionsController(
         return questionRepository.findAll()
             .shuffled()
             .take(QUESTIONS)
+    }
+
+    private fun isToday(timestampMillis: Long): Boolean {
+        val today = LocalDate.now()
+        val inputDate = Instant.ofEpochMilli(timestampMillis)
+            .atZone(ZoneId.systemDefault())
+            .toLocalDate()
+
+        return inputDate == today
     }
 }

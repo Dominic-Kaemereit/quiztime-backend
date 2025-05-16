@@ -38,6 +38,24 @@ class DailyQuestionsController(
         return getCachedDailyQuestions(null)
     }
 
+    @GetMapping("/finish")
+    fun finishDailyQuestions(request: HttpServletRequest): String {
+        val authHeader = request.getHeader("Authorization")
+
+        if (authHeader != null && authHeader.startsWith("Bearer ")) {
+            val email = authHeader.substring(7) // remove "Bearer "
+            val questions: Map<String, String> = request.parameterMap
+                .filterKeys { it.startsWith("question") }
+                .mapKeys { it.key.substring(8) } // remove "question"
+                .mapValues { it.value[0] }
+
+            println("Finishing daily questions for user: $email with answers: $questions")
+        }
+
+        return "No email provided, daily questions not finished."
+    }
+
+
     private fun getCachedDailyQuestions(email: String?): List<Question> {
         if (email != null) {
             var user = userRepository.findByEmail(email)
